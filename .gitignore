@@ -8,6 +8,9 @@ target-ide
 # log files
 log
 
+# lock files
+*.lock
+
 # jetty sessions
 sessions
 

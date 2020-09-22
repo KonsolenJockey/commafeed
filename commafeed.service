@@ -1,0 +1,14 @@
+[Unit]
+Description=A bloat-free feed reader
+After=local-fs.target network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/commafeed
+ExecStart=/usr/bin/java -Djava.net.preferIPv4Stack=true -server -jar commafeed.jar server config.yml
+SyslogIdentifier=commafeed
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

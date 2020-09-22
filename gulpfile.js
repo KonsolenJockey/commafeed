@@ -62,29 +62,23 @@ gulp.task('template-cache', function() {
 	return gulp.src(SRC_DIR + 'templates/**/*.html').pipe(templateCache(options)).pipe(gulp.dest(TEMP_DIR + 'js'));
 });
 
-gulp.task('build-dev', ['images', 'i18n', 'resources', 'sass', 'fonts', 'select2', 'swagger-ui', 'template-cache'], function() {
-	var assets = useref.assets({
-		searchPath : [SRC_DIR, TEMP_DIR]
-	});
+gulp.task('build-dev', gulp.series('images', 'i18n', 'resources', 'sass', 'fonts', 'select2', 'swagger-ui', 'template-cache'), function() {
 	var jsFilter = filter("**/*.js");
 	var cssFilter = filter("**/*.css");
-	return gulp.src([SRC_DIR + 'index.html', TEMP_DIR + 'app.css']).pipe(assets).pipe(rev()).pipe(assets.restore()).pipe(useref()).pipe(
+	return gulp.src([SRC_DIR + 'index.html', TEMP_DIR + 'app.css']).pipe(rev()).pipe(useref()).pipe(
 			revReplace()).pipe(gulp.dest(BUILD_DIR)).pipe(connect.reload());
 });
 
-gulp.task('build', ['images', 'i18n', 'resources', 'sass', 'fonts', 'select2', 'swagger-ui', 'template-cache'], function() {
-	var assets = useref.assets({
-		searchPath : [SRC_DIR, TEMP_DIR]
-	});
+gulp.task('build', gulp.series('images', 'i18n', 'resources', 'sass', 'fonts', 'select2', 'swagger-ui', 'template-cache'), function() {
 	var jsFilter = filter("**/*.js");
 	var cssFilter = filter("**/*.css");
-	return gulp.src([SRC_DIR + 'index.html', TEMP_DIR + 'app.css']).pipe(assets)
+	return gulp.src([SRC_DIR + 'index.html', TEMP_DIR + 'app.css'])
 
 	.pipe(cssFilter).pipe(minifyCSS()).pipe(cssFilter.restore())
 
 	.pipe(jsFilter).pipe(uglify()).pipe(jsFilter.restore())
 
-	.pipe(rev()).pipe(assets.restore()).pipe(useref()).pipe(revReplace()).pipe(gulp.dest(BUILD_DIR));
+	.pipe(rev()).pipe(useref()).pipe(revReplace()).pipe(gulp.dest(BUILD_DIR));
 });
 
 gulp.task('watch', function() {
@@ -111,5 +105,5 @@ gulp.task('serve', function() {
 	});
 });
 
-gulp.task('dev', ['build-dev', 'watch', 'serve']);
-gulp.task('default', ['build']);
+gulp.task('dev', gulp.series('build-dev', 'watch', 'serve'));
+gulp.task('default', gulp.series('build'));
